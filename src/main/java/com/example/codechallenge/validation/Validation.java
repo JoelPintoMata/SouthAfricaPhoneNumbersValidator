@@ -11,34 +11,67 @@ import java.util.UUID;
  */
 public class Validation {
 
-    private final UUID id;
-    private final List<RowValidation> rowValidationList;
-    private final int validLines;
-    private final int invalidNumbers;
-    private final int fixedNumbers;
+    private String id;
+    private List<RowValidation> rowValidationList;
+    private int totalNumbers;
+    private int validNumbers;
+    private int invalidNumbers;
+    private int fixedNumbers;
+
+    public Validation() {
+    }
 
     public Validation(int validNumbers, int invalidNumbers, int fixedNumbers, List<RowValidation> rowValidationList) {
-        this.id = UUID.randomUUID();
-        this.validLines = validNumbers;
+        this.id = UUID.randomUUID().toString();
+        this.totalNumbers = rowValidationList.size();
+        this.validNumbers = validNumbers;
         this.invalidNumbers = invalidNumbers;
         this.fixedNumbers = fixedNumbers;
         this.rowValidationList = rowValidationList;
     }
 
     public String getId() {
-        return id.toString();
-    }
-
-    public int getTotalLines() {
-        return rowValidationList.size();
-    }
-
-    public int getValidLines() {
-        return validLines;
+        return id;
     }
 
     public List<RowValidation> getRowValidationList() {
         return rowValidationList;
+    }
+
+    public void setRowValidationList(List<RowValidation> rowValidationList) {
+        this.rowValidationList = rowValidationList;
+    }
+
+    public int getTotalNumbers() {
+        return totalNumbers;
+    }
+
+    public void setTotalNumbers(int totalNumbers) {
+        this.totalNumbers = totalNumbers;
+    }
+
+    public int getValidNumbers() {
+        return validNumbers;
+    }
+
+    public void setValidNumbers(int validNumbers) {
+        this.validNumbers = validNumbers;
+    }
+
+    public int getInvalidNumbers() {
+        return invalidNumbers;
+    }
+
+    public void setInvalidNumbers(int invalidNumbers) {
+        this.invalidNumbers = invalidNumbers;
+    }
+
+    public int getFixedNumbers() {
+        return fixedNumbers;
+    }
+
+    public void setFixedNumbers(int fixedNumbers) {
+        this.fixedNumbers = fixedNumbers;
     }
 
     public String asJson() throws ValidationException {
@@ -48,13 +81,5 @@ public class Validation {
         } catch (IOException e) {
             throw new ValidationException("Cannot convert Validation to String");
         }
-    }
-
-    public int getInvalidNumbers() {
-        return this.invalidNumbers;
-    }
-
-    public int getFixedNunbers() {
-        return this.fixedNumbers;
     }
 }

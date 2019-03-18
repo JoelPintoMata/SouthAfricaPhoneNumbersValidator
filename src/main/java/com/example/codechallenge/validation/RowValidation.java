@@ -13,9 +13,13 @@ public class RowValidation {
     public static final String INVALID = "invalid";
     public static final String ADD_TRAILING_ZERO = "add trailing zero" ;
 
-    private final String id;
+    private String id;
     private String phoneNumber;
     private String validationResult;
+
+
+    public RowValidation() {
+    }
 
     public RowValidation(String phoneNumber) {
         this.id = new String();

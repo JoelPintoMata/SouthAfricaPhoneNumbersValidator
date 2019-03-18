@@ -14,10 +14,10 @@ public class SouthAfricaValidationServiceTest {
     public void validatePhoneNumberWithPrefix() {
         Validation validation = validationService.validate("27831234567");
         Assert.assertEquals(validation.getRowValidationList().get(0).getValidationResult(), RowValidation.CORRECT);
-        Assert.assertEquals(validation.getTotalLines(), 1);
-        Assert.assertEquals(validation.getValidLines(), 1);
+        Assert.assertEquals(validation.getTotalNumbers(), 1);
+        Assert.assertEquals(validation.getValidNumbers(), 1);
         Assert.assertEquals(validation.getInvalidNumbers(), 0);
-        Assert.assertEquals(validation.getFixedNunbers(), 0);
+        Assert.assertEquals(validation.getFixedNumbers(), 0);
     }
 
     @Test
