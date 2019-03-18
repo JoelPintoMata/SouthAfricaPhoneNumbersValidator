@@ -2,6 +2,10 @@ package com.example.codechallenge.validation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * A single validation step
+ * A {@link Validation} as many {@link RowValidation}
+ */
 public class RowValidation {
 
     @JsonIgnore

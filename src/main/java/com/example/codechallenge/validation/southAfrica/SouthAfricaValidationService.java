@@ -15,17 +15,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+/**
+ * Concrete implementation of South Africa numbers validation service
+ */
 @Service
 public class SouthAfricaValidationService implements ValidationService {
 
     private Logger logger = LoggerFactory.getLogger(SouthAfricaValidationService.class);
 
     private static final String SOUTH_AFRICA_PREFIX = "27";
+    private final String regex = "((0|27){0,1}[0-9]{9})";
+    private final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
     private int validLines;
     private int invalidLines;
     private int fixedlines;
+    private String matcherGroup1;
 
     @Override
     public Validation validate(HttpServletRequest request) throws ValidationException {
@@ -70,7 +78,6 @@ public class SouthAfricaValidationService implements ValidationService {
         return new Validation(validLines, invalidLines, fixedlines, rowValidationList);
     }
 
-
     /**
      * Checks if the phone number included on this RowValidator is valid
      * @param rowValidation the row to validate
@@ -78,13 +85,23 @@ public class SouthAfricaValidationService implements ValidationService {
      */
     private void validate(RowValidation rowValidation) {
         String phoneNumber = rowValidation.getPhoneNumber();
-        if (phoneNumber.length() == 9) {
-            rowValidation.setPhoneNumber(String.format("0%s", phoneNumber));
-            rowValidation.setValidationResult(RowValidation.ADD_TRAILING_ZERO);
-            fixedlines++;
-        } else if (phoneNumber.length() == 11 && phoneNumber.startsWith(SOUTH_AFRICA_PREFIX)) {
+        Matcher matcher = pattern.matcher(phoneNumber);
+
+        String matcherGroup2 = null;
+        String matcherGroup3 = null;
+//        advance until the last match
+        while (matcher.find()) {
+            matcherGroup2 = matcher.group(1);
+            matcherGroup3 = matcher.group(2);
+        }
+        if (matcherGroup3 != null && (matcherGroup3.equals("0") || matcherGroup3.equals("27"))) {
             rowValidation.setValidationResult(RowValidation.CORRECT);
+            rowValidation.setPhoneNumber(matcherGroup2);
             validLines++;
+        } else if (matcherGroup3 == null) {
+            rowValidation.setValidationResult(RowValidation.ADD_TRAILING_ZERO);
+            rowValidation.setPhoneNumber(String.format("0%s", matcherGroup2));
+            fixedlines++;
         } else {
             rowValidation.setValidationResult(RowValidation.INVALID);
             invalidLines++;

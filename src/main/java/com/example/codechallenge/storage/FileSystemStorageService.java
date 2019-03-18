@@ -17,6 +17,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Concrete implementation of a "to" file system storage service
+ */
 @Service
 @EnableAutoConfiguration
 public class FileSystemStorageService implements StorageService {
@@ -38,7 +41,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public String loadAsResource(String filename) throws StorageException {
+    public String load(String filename) throws StorageException {
         try {
             Path file = Paths.get(rootLocation).resolve(String.format("%s.json", filename));
             Resource resource = new UrlResource(file.toUri());
@@ -46,8 +49,7 @@ public class FileSystemStorageService implements StorageService {
                 return inputStreamToString(resource.getInputStream());
             }
             else {
-                throw new StorageException(
-                        "Could not read file: " + filename+".json");
+                throw new StorageException("Could not read file: " + filename+".json");
             }
         }
         catch (IOException e) {

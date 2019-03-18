@@ -35,4 +35,20 @@ public class SouthAfricaValidationServiceTest {
     public void validatePhoneNumberInvalid() {
         Assert.assertEquals(validationService.validate("31234567").getRowValidationList().get(0).getValidationResult(), RowValidation.INVALID);
     }
+
+    @Test
+    public void validatePhoneNumberWithinDeleted() {
+        Validation validation = validationService.validate("27761378661_DELETED_27488991647");
+        Assert.assertEquals(validation.getRowValidationList().get(0).getValidationResult(), RowValidation.CORRECT);
+        Assert.assertEquals(validation.getRowValidationList().get(0).getPhoneNumber(), "27488991647");
+
+        validation = validationService.validate("27761378661_DELETED_0488991647");
+        Assert.assertEquals(validation.getRowValidationList().get(0).getValidationResult(), RowValidation.CORRECT);
+        Assert.assertEquals(validation.getRowValidationList().get(0).getPhoneNumber(), "0488991647");
+
+        validation = validationService.validate("27761378661_DELETED_488991647");
+
+        Assert.assertEquals(validation.getRowValidationList().get(0).getValidationResult(), RowValidation.ADD_TRAILING_ZERO);
+        Assert.assertEquals(validation.getRowValidationList().get(0).getPhoneNumber(), "0488991647");
+    }
 }

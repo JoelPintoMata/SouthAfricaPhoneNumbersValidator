@@ -23,14 +23,14 @@ public class FileUploadController {
         this.southAfricaValidatorService = southAfricaValidatorService;
     }
 
-    @PostMapping("/upload")
+    @PostMapping("/store")
     @ResponseBody
-    public String upload(final HttpServletRequest request) {
+    public String store(final HttpServletRequest request) {
         String result = null;
         try {
             Validation validation = southAfricaValidatorService.validate(request);
             fileSystemStorageService.store(validation);
-            result = fileSystemStorageService.loadAsResource(validation.getId());
+            result = fileSystemStorageService.load(validation.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }

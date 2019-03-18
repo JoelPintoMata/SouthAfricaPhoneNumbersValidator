@@ -24,10 +24,9 @@ public class FileDownloadController {
     @RequestMapping("/load")
     @ResponseBody
     public String load(@RequestParam("id") String id) {
-
         String result = null;
         try {
-            result =  fileSystemStorageService.loadAsResource(id);
+            result =  fileSystemStorageService.load(id);
         } catch (Exception e) {
             e.printStackTrace();
         }

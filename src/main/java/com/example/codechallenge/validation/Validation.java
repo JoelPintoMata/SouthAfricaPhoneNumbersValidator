@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Validation process class
+ */
 public class Validation {
 
     private final UUID id;
     private final List<RowValidation> rowValidationList;
-    private int totalLines;
     private final int validLines;
     private final int invalidNumbers;
     private final int fixedNumbers;

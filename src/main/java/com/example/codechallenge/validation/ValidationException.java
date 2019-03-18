@@ -1,5 +1,8 @@
 package com.example.codechallenge.validation;
 
+/**
+ * Validation process exception
+ */
 public class ValidationException extends Exception {
 
     public ValidationException(String message) {
