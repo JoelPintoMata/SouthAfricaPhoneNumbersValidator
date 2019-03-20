@@ -35,4 +35,4 @@ mvn test
 
 ## CURL
 
-curl -X POST -d "@./src/test/resources/south_african_mobile_numbers.txt" http://localhost:8080/upload
+curl -X POST --header "Content-Type: text/csv" --data "@src/test/resources/south_african_mobile_numbers.txt" http://localhost:8080/upload
