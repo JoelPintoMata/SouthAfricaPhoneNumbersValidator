@@ -32,7 +32,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void store(Validation validation) throws StorageException {
+    public void upload(Validation validation) throws StorageException {
         try {
             new ObjectMapper().writeValue(new File(String.format("%s%s.json", rootLocation, validation.getId())), validation);
         } catch (IOException e) {

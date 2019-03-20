@@ -64,7 +64,8 @@ public class FileDownloadControllerTest {
 
         // when
         MockHttpServletResponse response = mvc.perform(
-                get("/load").param("id", "123456789")
+                get("/load").param("id" +
+                        "", "123456789")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 

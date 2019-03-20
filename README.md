@@ -29,12 +29,10 @@ mvn test
 
 ### Endpoints
 
-| Definition                                      | URI                     |
-| ----------------------------------------------- | -----------------------:|
-| 0. only user "efteling"                         | http://localhost:8080/0 |
-| 1. only socials containing: "disney"            | http://localhost:8080/1 |
-| 2. only socials not containing "disney"         | http://localhost:8080/2 |
-| 3. only socials with video content              | http://localhost:8080/3 |
-| 4. only socials created before 1st Feb 2017     | http://localhost:8080/4 |
-| 5. only socials created after 1st Feb 2017      | http://localhost:8080/5 |
-| 6. only Facebook socials                        | http://localhost:8080/6 |
+| Definition | URI |
+| --- | --- |
+| Uploads a file | /upload |
+
+## CURL
+
+curl -X POST -d "@./src/test/resources/south_african_mobile_numbers.txt" http://localhost:8080/upload

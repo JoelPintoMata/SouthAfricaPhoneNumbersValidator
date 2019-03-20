@@ -20,5 +20,5 @@ public interface StorageService {
      * @param validation the results of the validation procedure
      * @throws StorageException
      */
-    void store(Validation validation) throws StorageException;
+    void upload(Validation validation) throws StorageException;
 }
