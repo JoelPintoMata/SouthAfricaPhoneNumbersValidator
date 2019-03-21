@@ -67,7 +67,7 @@ public class FileUploadControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String str = objectMapper.writeValueAsString(validation);
         // given
-        given(fileSystemStorageService.load(Mockito.anyString()))
+        given(fileSystemStorageService.get(Mockito.anyString()))
                 .willReturn(str);
 
         // when

@@ -38,7 +38,7 @@ public class FileUploadController {
         try {
             Validation validation = southAfricaValidatorService.validate(request);
             fileSystemStorageService.upload(validation);
-            result = fileSystemStorageService.load(validation.getId());
+            result = fileSystemStorageService.get(validation.getId());
             return result;
         } catch (ValidationException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while performing file validation: ", e);
