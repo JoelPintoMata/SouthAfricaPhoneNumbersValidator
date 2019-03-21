@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.example.codechallenge.validation.RowValidation.REMOVE_SYMBOLS;
+
 /**
  * Concrete implementation of South Africa numbers validation service
  */
@@ -29,8 +31,11 @@ public class SouthAfricaValidationService implements ValidationService {
     private static final String SOUTH_AFRICA_PREFIX = "27";
     private static final String SOUTH_AFRICA_TRAILING_DIGIT = "0";
 
-    private final String regex = "((0|27){0,1}[0-9]{9})";
-    private final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+    private final String regexValidation = "((0|27){0,1}[0-9]{9})";
+    private final String regexCleanup = "[-()\\s]";
+
+    private final Pattern patternValidation = Pattern.compile(regexValidation, Pattern.MULTILINE);
+    private final Pattern patternCleanup = Pattern.compile(regexCleanup, Pattern.MULTILINE);
 
     private int validLines;
     private int invalidLines;
@@ -54,9 +59,6 @@ public class SouthAfricaValidationService implements ValidationService {
 
                 RowValidation rowValidation = new RowValidation(row[0], row[1]);
                 validate(rowValidation);
-                if (!rowValidation.getValidationResult().equals(RowValidation.CORRECT)) {
-                    fix(rowValidation);
-                }
                 rowValidationList.add(rowValidation);
             }
         } catch (IOException e) {
@@ -71,9 +73,6 @@ public class SouthAfricaValidationService implements ValidationService {
 
         RowValidation rowValidation = new RowValidation(phoneNumber);
         validate(rowValidation);
-        if (!rowValidation.getValidationResult().equals(RowValidation.CORRECT)) {
-            fix(rowValidation);
-        }
         rowValidationList.add(rowValidation);
 
         return new Validation(validLines, invalidLines, fixedlines, rowValidationList);
@@ -86,37 +85,37 @@ public class SouthAfricaValidationService implements ValidationService {
      */
     private void validate(RowValidation rowValidation) {
         String phoneNumber = rowValidation.getPhoneNumber();
-        Matcher matcher = pattern.matcher(phoneNumber);
+        Matcher matcherValidation = patternValidation.matcher(phoneNumber);
 
-        String matcherGroup2 = null;
-        String matcherGroup3 = null;
+        String matchedValidationString = null;
 //        advance until the last match
-        while (matcher.find()) {
-            matcherGroup2 = matcher.group(1);
-            matcherGroup3 = matcher.group(2);
+        while (matcherValidation.find()) {
+            phoneNumber = matcherValidation.group(1);
+            matchedValidationString = matcherValidation.group(2);
         }
-        if (matcherGroup3 != null && (matcherGroup3.equals(SOUTH_AFRICA_TRAILING_DIGIT) || matcherGroup3.equals(SOUTH_AFRICA_PREFIX))) {
-            rowValidation.setValidationResult(RowValidation.CORRECT);
-            rowValidation.setPhoneNumber(matcherGroup2);
+
+//        solve issues with symbols
+        Matcher matcherCleanup = patternCleanup.matcher(phoneNumber);
+        if (matcherCleanup.find()) {
+            phoneNumber = phoneNumber.replaceAll(regexCleanup, "");
+
+            rowValidation.setPhoneNumber(phoneNumber);
+            rowValidation.addValidationResult(RowValidation.REMOVE_SYMBOLS);
+            fixedlines++;
+        }
+
+//        solve issues with prefixes
+        if (matchedValidationString != null && (matchedValidationString.equals(SOUTH_AFRICA_TRAILING_DIGIT) || matchedValidationString.equals(SOUTH_AFRICA_PREFIX))) {
+            rowValidation.addValidationResult(RowValidation.CORRECT);
+            rowValidation.setPhoneNumber(phoneNumber);
             validLines++;
-        } else if (matcherGroup3 == null) {
-            rowValidation.setValidationResult(RowValidation.ADD_TRAILING_ZERO);
-            rowValidation.setPhoneNumber(String.format("%s%s", SOUTH_AFRICA_TRAILING_DIGIT, matcherGroup2));
+        } else if (matchedValidationString == null) {
+            rowValidation.addValidationResult(RowValidation.ADD_TRAILING_ZERO);
+            rowValidation.setPhoneNumber(String.format("%s%s", SOUTH_AFRICA_TRAILING_DIGIT, phoneNumber));
             fixedlines++;
         } else {
-            rowValidation.setValidationResult(RowValidation.INVALID);
+            rowValidation.addValidationResult(RowValidation.INVALID);
             invalidLines++;
-        }
-    }
-
-    /**
-     * Fixes the phone number on this row validation
-     * @param rowValidation
-     */
-    private void fix(RowValidation rowValidation) {
-        if (rowValidation.getPhoneNumber().length() == 9) {
-            rowValidation.setPhoneNumber(String.format("0%s", rowValidation.getPhoneNumber()));
-            rowValidation.setValidationResult(RowValidation.ADD_TRAILING_ZERO);
         }
     }
 }
