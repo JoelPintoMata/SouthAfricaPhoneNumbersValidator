@@ -1,4 +1,4 @@
-package com.example.codechallenge.validation;
+package codechallenge.validation;
 
 /**
  * Validation process exception

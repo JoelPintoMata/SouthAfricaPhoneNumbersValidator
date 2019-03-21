@@ -1,10 +1,10 @@
-package com.example.codechallenge.controllers;
+package codechallenge.controllers;
 
 
-import com.example.codechallenge.storage.StorageException;
-import com.example.codechallenge.storage.StorageService;
-import com.example.codechallenge.validation.ValidationException;
-import com.example.codechallenge.validation.ValidationService;
+import codechallenge.storage.StorageException;
+import codechallenge.storage.StorageService;
+import codechallenge.validation.ValidationException;
+import codechallenge.validation.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;

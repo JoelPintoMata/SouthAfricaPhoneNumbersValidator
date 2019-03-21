@@ -1,12 +1,10 @@
-package com.example.codechallenge.validation.southAfrica;
+package codechallenge.validation.southAfrica;
 
-import com.example.codechallenge.validation.RowValidation;
-import com.example.codechallenge.validation.Validation;
-import com.example.codechallenge.validation.ValidationService;
+import codechallenge.validation.RowValidation;
+import codechallenge.validation.Validation;
+import codechallenge.validation.ValidationService;
 import org.junit.Assert;
 import org.junit.Test;
-
-import javax.validation.constraints.AssertTrue;
 
 public class SouthAfricaValidationServiceTest {
 

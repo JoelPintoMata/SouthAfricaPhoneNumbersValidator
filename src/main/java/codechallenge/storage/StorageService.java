@@ -1,6 +1,6 @@
-package com.example.codechallenge.storage;
+package codechallenge.storage;
 
-import com.example.codechallenge.validation.Validation;
+import codechallenge.validation.Validation;
 
 /**
  * Interface for a storage service

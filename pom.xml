@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>southAfricanPhoneNumbers</artifactId>
+	<artifactId>southAfricanPhoneNumbersValidation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>JavaSparkJSONReader</name>
-	<description>Java Spark JSON Reader</description>
+	<description>South African phone numbers validation</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

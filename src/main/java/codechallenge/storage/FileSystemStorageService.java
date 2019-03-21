@@ -1,7 +1,6 @@
-package com.example.codechallenge.storage;
+package codechallenge.storage;
 
-import com.example.codechallenge.validation.Validation;
-import com.example.codechallenge.validation.southAfrica.SouthAfricaValidationService;
+import codechallenge.validation.Validation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +10,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 

@@ -1,4 +1,4 @@
-package com.example.codechallenge.storage;
+package codechallenge.storage;
 
 /**
  * Storage process exception
