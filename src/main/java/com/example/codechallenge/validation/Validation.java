@@ -74,6 +74,11 @@ public class Validation {
         this.fixedNumbers = fixedNumbers;
     }
 
+    /**
+     * Formats this {@link Validation} as a json
+     * @return this Validation as a json
+     * @throws ValidationException
+     */
     public String asJson() throws ValidationException {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
