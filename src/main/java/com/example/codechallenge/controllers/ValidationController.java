@@ -1,38 +1,65 @@
 package com.example.codechallenge.controllers;
 
 
+import com.example.codechallenge.storage.StorageException;
+import com.example.codechallenge.storage.StorageService;
 import com.example.codechallenge.validation.ValidationException;
 import com.example.codechallenge.validation.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Main application controller
+ * Validation controller
  */
 @Controller
-@EnableAutoConfiguration
 public class ValidationController {
 
     private ValidationService southAfricaValidatorService;
 
+    private StorageService fileSystemStorageService;
+
     @Autowired
-    public ValidationController(ValidationService southAfricaValidatorService) {
+    public ValidationController(ValidationService southAfricaValidatorService, StorageService fileSystemStorageService) {
         this.southAfricaValidatorService = southAfricaValidatorService;
+        this.fileSystemStorageService = fileSystemStorageService;
     }
 
+    /**
+     * Validates a single phone number
+     * @param phoneNumber the phone number
+     * @return the validation result
+     */
     @RequestMapping("/validate")
     @ResponseBody
     public String validate(@RequestParam("phoneNumber") String phoneNumber) {
-        String result = null;
+        String result;
         try {
             result = southAfricaValidatorService.validate(phoneNumber).asJson();
+            return result;
         } catch (ValidationException e) {
-            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while performing file validation: ", e);
         }
-        return result;
+    }
+
+    /**
+     * Retrieves a validation result
+     * @param id the validation id
+     * @return the validation result
+     */
+    @RequestMapping("/get")
+    @ResponseBody
+    public String get(@RequestParam("id") String id) {
+        String result;
+        try {
+            result =  fileSystemStorageService.get(id);
+            return result;
+        } catch (StorageException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while storing file validation results: ", e);
+        }
     }
 }

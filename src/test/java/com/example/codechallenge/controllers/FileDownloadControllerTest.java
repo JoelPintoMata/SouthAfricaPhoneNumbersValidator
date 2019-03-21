@@ -40,7 +40,7 @@ public class FileDownloadControllerTest {
     private StorageService fileSystemStorageService;
 
     @InjectMocks
-    private FileDownloadController fileDownloadController;
+    private FileLooadController fileDownloadController;
 
     @Before
     public void setup() {

@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 public class FileSystemStorageService implements StorageService {
 
     private String rootLocation;
-    private Path rootPath;
 
     public FileSystemStorageService(@Value("${rootLocation}") String rootLocation) {
         this.rootLocation = rootLocation;
@@ -41,7 +40,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public String load(String filename) throws StorageException {
+    public String get(String filename) throws StorageException {
         try {
             Path file = Paths.get(rootLocation).resolve(String.format("%s.json", filename));
             Resource resource = new UrlResource(file.toUri());
@@ -57,19 +56,9 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
-    @PostConstruct
-    public void init() throws StorageException {
-        try {
-            rootPath = Files.createDirectories(Paths.get(rootLocation));
-        }
-        catch (IOException e) {
-            throw new StorageException("Could not initialize storage", e);
-        }
-    }
-
     /**
-     * Extracts an string from a inputstream
-     * @param inputStream an inputstream
+     * Extracts a string from a inputstream
+     * @param inputStream the inputstream
      * @return a string
      * @throws StorageException
      */

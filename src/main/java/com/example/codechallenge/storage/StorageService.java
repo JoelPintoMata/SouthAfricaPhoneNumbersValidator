@@ -8,12 +8,12 @@ import com.example.codechallenge.validation.Validation;
 public interface StorageService {
 
     /**
-     * Loads a file from the storage and returns its contents as a string
+     * Retrives a file from the storage and returns its contents as a string
      * @param filename the name of the file to load
      * @return a string representing the contents of the stored file
      * @throws StorageException
      */
-    String load(String filename) throws StorageException;
+    String get(String filename) throws StorageException;
 
     /**
      * Stores the result of a validation procedure
