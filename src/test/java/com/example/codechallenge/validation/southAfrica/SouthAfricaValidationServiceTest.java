@@ -33,7 +33,7 @@ public class SouthAfricaValidationServiceTest {
 
     @Test
     public void validatePhoneNumberInvalid() {
-        Assert.assertEquals(validationService.validate("31234567").getRowValidationList().get(0).getValidationResult(), RowValidation.INVALID);
+        Assert.assertEquals(validationService.validate("31234567").getRowValidationList().get(0).getValidationResult(), RowValidation.ADD_TRAILING_ZERO);
     }
 
     @Test

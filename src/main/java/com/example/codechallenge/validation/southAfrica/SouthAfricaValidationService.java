@@ -27,13 +27,14 @@ public class SouthAfricaValidationService implements ValidationService {
     private Logger logger = LoggerFactory.getLogger(SouthAfricaValidationService.class);
 
     private static final String SOUTH_AFRICA_PREFIX = "27";
+    private static final String SOUTH_AFRICA_TRAILING_DIGIT = "0";
+
     private final String regex = "((0|27){0,1}[0-9]{9})";
     private final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
     private int validLines;
     private int invalidLines;
     private int fixedlines;
-    private String matcherGroup1;
 
     @Override
     public Validation validate(HttpServletRequest request) throws ValidationException {
@@ -94,13 +95,13 @@ public class SouthAfricaValidationService implements ValidationService {
             matcherGroup2 = matcher.group(1);
             matcherGroup3 = matcher.group(2);
         }
-        if (matcherGroup3 != null && (matcherGroup3.equals("0") || matcherGroup3.equals("27"))) {
+        if (matcherGroup3 != null && (matcherGroup3.equals(SOUTH_AFRICA_TRAILING_DIGIT) || matcherGroup3.equals(SOUTH_AFRICA_PREFIX))) {
             rowValidation.setValidationResult(RowValidation.CORRECT);
             rowValidation.setPhoneNumber(matcherGroup2);
             validLines++;
         } else if (matcherGroup3 == null) {
             rowValidation.setValidationResult(RowValidation.ADD_TRAILING_ZERO);
-            rowValidation.setPhoneNumber(String.format("0%s", matcherGroup2));
+            rowValidation.setPhoneNumber(String.format("%s%s", SOUTH_AFRICA_TRAILING_DIGIT, matcherGroup2));
             fixedlines++;
         } else {
             rowValidation.setValidationResult(RowValidation.INVALID);

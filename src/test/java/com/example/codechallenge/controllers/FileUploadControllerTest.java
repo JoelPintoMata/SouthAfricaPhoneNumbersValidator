@@ -72,7 +72,7 @@ public class FileUploadControllerTest {
 
         // when
         MockHttpServletResponse response = mvc.perform(
-                post("/store")
+                post("/upload")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 

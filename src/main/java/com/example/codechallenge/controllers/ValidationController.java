@@ -8,9 +8,7 @@ import com.example.codechallenge.validation.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -34,7 +32,7 @@ public class ValidationController {
      * @param phoneNumber the phone number
      * @return the validation result
      */
-    @RequestMapping("/validate")
+    @GetMapping("/validate")
     @ResponseBody
     public String validate(@RequestParam("phoneNumber") String phoneNumber) {
         String result;
@@ -51,7 +49,7 @@ public class ValidationController {
      * @param id the validation id
      * @return the validation result
      */
-    @RequestMapping("/get")
+    @GetMapping("/get")
     @ResponseBody
     public String get(@RequestParam("id") String id) {
         String result;
