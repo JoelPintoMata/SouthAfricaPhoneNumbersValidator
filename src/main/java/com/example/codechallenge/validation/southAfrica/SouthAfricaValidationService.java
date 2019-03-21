@@ -30,8 +30,9 @@ public class SouthAfricaValidationService implements ValidationService {
 
     private static final String SOUTH_AFRICA_PREFIX = "27";
     private static final String SOUTH_AFRICA_TRAILING_DIGIT = "0";
+    private static final int SOUTH_AFRICA_NUMBER_OF_DIGITS = 9;
 
-    private final String regexValidation = "((0|27){0,1}[0-9]{9})";
+    private final String regexValidation = "((0|27){0,1}[0-9]{9})$";
     private final String regexCleanup = "[-()\\s]";
 
     private final Pattern patternValidation = Pattern.compile(regexValidation, Pattern.MULTILINE);
@@ -62,6 +63,7 @@ public class SouthAfricaValidationService implements ValidationService {
                 rowValidationList.add(rowValidation);
             }
         } catch (IOException e) {
+            logger.error(String.format("Failed to perform validation: %s", e.getMessage()));
             throw new ValidationException("Failed to store file ", e);
         }
         return new Validation(validLines, invalidLines, fixedlines, rowValidationList);
@@ -84,38 +86,65 @@ public class SouthAfricaValidationService implements ValidationService {
      * @return true if valid, false, otherwise
      */
     private void validate(RowValidation rowValidation) {
-        String phoneNumber = rowValidation.getPhoneNumber();
-        Matcher matcherValidation = patternValidation.matcher(phoneNumber);
+        Matcher matcherValidation = patternValidation.matcher(rowValidation.getPhoneNumber());
+        boolean isValid = false;
+        
+        String phoneNumber = null;
+        String prefix = null;
 
-        String matchedValidationString = null;
-//        advance until the last match
-        while (matcherValidation.find()) {
+//        all good
+        if (matcherValidation.find()) {
             phoneNumber = matcherValidation.group(1);
-            matchedValidationString = matcherValidation.group(2);
+            prefix = matcherValidation.group(2);
+            isValid = true;
         }
 
-//        solve issues with symbols
-        Matcher matcherCleanup = patternCleanup.matcher(phoneNumber);
-        if (matcherCleanup.find()) {
-            phoneNumber = phoneNumber.replaceAll(regexCleanup, "");
-
-            rowValidation.setPhoneNumber(phoneNumber);
-            rowValidation.addValidationResult(RowValidation.REMOVE_SYMBOLS);
-            fixedlines++;
-        }
-
-//        solve issues with prefixes
-        if (matchedValidationString != null && (matchedValidationString.equals(SOUTH_AFRICA_TRAILING_DIGIT) || matchedValidationString.equals(SOUTH_AFRICA_PREFIX))) {
-            rowValidation.addValidationResult(RowValidation.CORRECT);
-            rowValidation.setPhoneNumber(phoneNumber);
-            validLines++;
-        } else if (matchedValidationString == null) {
-            rowValidation.addValidationResult(RowValidation.ADD_TRAILING_ZERO);
-            rowValidation.setPhoneNumber(String.format("%s%s", SOUTH_AFRICA_TRAILING_DIGIT, phoneNumber));
-            fixedlines++;
+        if (rowValidation.getPhoneNumber().contains("_DELETED_")) {
+//            solve issues with prefixes
+            if (prefix != null && (prefix.equals(SOUTH_AFRICA_TRAILING_DIGIT) || prefix.equals(SOUTH_AFRICA_PREFIX))) {
+                logger.info(String.format("Phone number is correct: %s", phoneNumber));
+                rowValidation.addValidationResult(RowValidation.CORRECT);
+                rowValidation.setPhoneNumber(phoneNumber);
+                validLines++;
+            } else if (prefix == null) {
+                logger.info(String.format("Phone number missing trailing 0: %s", phoneNumber));
+                rowValidation.addValidationResult(RowValidation.ADD_TRAILING_ZERO);
+                rowValidation.setPhoneNumber(String.format("%s%s", SOUTH_AFRICA_TRAILING_DIGIT, phoneNumber));
+                fixedlines++;
+            } else {
+                logger.info(String.format("Invalid phone number: %s", phoneNumber));
+                rowValidation.addValidationResult(RowValidation.INVALID);
+                invalidLines++;
+            }
         } else {
-            rowValidation.addValidationResult(RowValidation.INVALID);
-            invalidLines++;
+            phoneNumber = rowValidation.getPhoneNumber();
+
+//            solve issues with symbols
+            Matcher matcherCleanup = patternCleanup.matcher(phoneNumber);
+            if (matcherCleanup.find()) {
+                phoneNumber = phoneNumber.replaceAll(regexCleanup, "");
+
+                rowValidation.setPhoneNumber(phoneNumber);
+                rowValidation.addValidationResult(RowValidation.REMOVE_SYMBOLS);
+                fixedlines++;
+            }
+
+//            solve issues with prefixes
+            if (phoneNumber.length() == SOUTH_AFRICA_NUMBER_OF_DIGITS + SOUTH_AFRICA_PREFIX.length()) {
+                logger.info(String.format("Phone number is correct: %s", phoneNumber));
+                rowValidation.addValidationResult(RowValidation.CORRECT);
+                rowValidation.setPhoneNumber(phoneNumber);
+                validLines++;
+            } else if (phoneNumber.length() == SOUTH_AFRICA_NUMBER_OF_DIGITS) {
+                logger.info(String.format("Phone number missing trailing 0: %s", phoneNumber));
+                rowValidation.addValidationResult(RowValidation.ADD_TRAILING_ZERO);
+                rowValidation.setPhoneNumber(String.format("%s%s", SOUTH_AFRICA_TRAILING_DIGIT, phoneNumber));
+                fixedlines++;
+            } else if (!isValid) {
+                logger.info(String.format("Invalid phone number: %s", phoneNumber));
+                rowValidation.addValidationResult(RowValidation.INVALID);
+                invalidLines++;
+            }
         }
     }
 }

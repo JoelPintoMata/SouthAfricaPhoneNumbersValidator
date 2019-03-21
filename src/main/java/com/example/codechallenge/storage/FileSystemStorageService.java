@@ -1,7 +1,10 @@
 package com.example.codechallenge.storage;
 
 import com.example.codechallenge.validation.Validation;
+import com.example.codechallenge.validation.southAfrica.SouthAfricaValidationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.core.io.Resource;
@@ -24,6 +27,8 @@ import java.nio.file.Paths;
 @EnableAutoConfiguration
 public class FileSystemStorageService implements StorageService {
 
+    private Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
+
     private String rootLocation;
 
     public FileSystemStorageService(@Value("${rootLocation}") String rootLocation) {
@@ -35,6 +40,7 @@ public class FileSystemStorageService implements StorageService {
         try {
             new ObjectMapper().writeValue(new File(String.format("%s%s.json", rootLocation, validation.getId())), validation);
         } catch (IOException e) {
+            logger.error(String.format("Failed to store file validation: %s, %s", validation.getId(), e.getMessage()));
             throw new StorageException("Failed to store file ", e);
         }
     }
@@ -48,10 +54,12 @@ public class FileSystemStorageService implements StorageService {
                 return inputStreamToString(resource.getInputStream());
             }
             else {
+                logger.error(String.format("Could not read file: %.json", filename));
                 throw new StorageException("Could not read file: " + filename+".json");
             }
         }
         catch (IOException e) {
+            logger.error(String.format("Could not read file: %.json", filename));
             throw new StorageException("Could not read file: " + filename, e);
         }
     }
@@ -71,6 +79,7 @@ public class FileSystemStorageService implements StorageService {
             }
             return result.toString();
         } catch (IOException e) {
+            logger.error(String.format("Could not initialize storage: %z", e.getMessage()));
             throw new StorageException("Could not initialize storage", e);
         }
     }
