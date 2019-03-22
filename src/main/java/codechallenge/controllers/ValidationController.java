@@ -40,7 +40,7 @@ public class ValidationController {
             result = southAfricaValidatorService.validate(phoneNumber).asJson();
             return result;
         } catch (ValidationException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while performing file validation: ", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error while storing file validation results: %s", e.getMessage()));
         }
     }
 
@@ -57,7 +57,7 @@ public class ValidationController {
             result =  fileSystemStorageService.get(id);
             return result;
         } catch (StorageException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while storing file validation results: ", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error while storing file validation results: %s", e.getMessage()));
         }
     }
 }

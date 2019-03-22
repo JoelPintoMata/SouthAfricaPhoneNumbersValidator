@@ -191,7 +191,7 @@ public class SouthAfricaValidationService implements ValidationService {
         if (matcherCleanup.find()) {
             phoneNumber = phoneNumber.replaceAll(regexCleanup, "");
 
-            logger.info(String.format("Phone number contained symbols: %s", phoneNumber));
+            logger.info(String.format("Phone number contained symbols"));
             rowValidation.setPhoneNumber(phoneNumber);
             rowValidation.addValidationResult(RowValidation.REMOVE_SYMBOLS);
             isFixed = true;

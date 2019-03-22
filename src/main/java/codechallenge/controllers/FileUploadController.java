@@ -41,9 +41,9 @@ public class FileUploadController {
             result = fileSystemStorageService.get(validation.getId());
             return result;
         } catch (ValidationException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while performing file validation: ", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error while performing file validation: %s", e.getMessage()));
         } catch (StorageException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while storing file validation results: ", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error while storing file validation results: %s", e.getMessage()));
         }
     }
 }

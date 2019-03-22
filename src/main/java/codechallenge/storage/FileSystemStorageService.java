@@ -49,14 +49,13 @@ public class FileSystemStorageService implements StorageService {
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return inputStreamToString(resource.getInputStream());
-            }
-            else {
-                logger.error(String.format("Could not read file: %.json", filename));
+            } else {
+                logger.error(String.format("Could not read file: %s.json", filename));
                 throw new StorageException("Could not read file: " + filename+".json");
             }
         }
         catch (IOException e) {
-            logger.error(String.format("Could not read file: %.json", filename));
+            logger.error(String.format("Could not read file: %s.json", filename));
             throw new StorageException("Could not read file: " + filename, e);
         }
     }
