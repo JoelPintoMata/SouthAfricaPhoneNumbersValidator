@@ -44,26 +44,26 @@ public class SouthAfricaValidationService implements ValidationService {
     private final Pattern patternCleanup = Pattern.compile(regexCleanup, Pattern.MULTILINE);
     private final Pattern patternRightSideNumber = Pattern.compile(regexRightSideNumber, Pattern.MULTILINE);
 
-    private int validLines;
-    private int invalidLines;
-    private int fixedlines;
+    private int validPhoneNumbers = 0;
+    private int invalidPhoneNumbers = 0;
+    private int fixedPhoneNumbers = 0;
+
+    private boolean isValid = false;
+    private boolean isInvalid = false;
+    private boolean isFixed = false;
 
     @Override
     public Validation validate(HttpServletRequest request) throws ValidationException {
-
         List<RowValidation> rowValidationList = new ArrayList<>();
 
         try (InputStream is = request.getInputStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-            boolean skip = true;
+//            lets skip the header
+            if (reader.ready()) {
+                reader.readLine();
+            }
             while(reader.ready()) {
-//                lets skip the header
-                if (skip) {
-                    skip = false;
-                    continue;
-                }
-
                 String[] row = reader.readLine().split(",");
 
                 RowValidation rowValidation = new RowValidation(row[0], row[1]);
@@ -74,18 +74,31 @@ public class SouthAfricaValidationService implements ValidationService {
             logger.error(String.format("Failed to perform validation: %s", e.getMessage()));
             throw new ValidationException("Failed to store file ", e);
         }
-        return new Validation(validLines, invalidLines, fixedlines, rowValidationList);
+        return new Validation(validPhoneNumbers, invalidPhoneNumbers, fixedPhoneNumbers, rowValidationList);
     }
 
     @Override
     public Validation validate(String phoneNumber) {
+        validPhoneNumbers = 0;
+        invalidPhoneNumbers = 0;
+        fixedPhoneNumbers = 0;
+
         List<RowValidation> rowValidationList = new ArrayList<>();
 
         RowValidation rowValidation = new RowValidation(phoneNumber);
         validate(rowValidation);
-        rowValidationList.add(rowValidation);
 
-        return new Validation(validLines, invalidLines, fixedlines, rowValidationList);
+//        lets calculate the final scores
+        if (isInvalid) {
+            invalidPhoneNumbers++;
+        } else if (isFixed) {
+            fixedPhoneNumbers++;
+        } else if (isValid) {
+            validPhoneNumbers++;
+        }
+
+        rowValidationList.add(rowValidation);
+        return new Validation(validPhoneNumbers, invalidPhoneNumbers, fixedPhoneNumbers, rowValidationList);
     }
 
     /**
@@ -94,18 +107,42 @@ public class SouthAfricaValidationService implements ValidationService {
      * @return true if valid, false, otherwise
      */
     private void validate(RowValidation rowValidation) {
-
+//        tries to retrieve the phone number
         parse(rowValidation);
 
+//        sanitizes the phone number
         sanitize(rowValidation);
+
         String phoneNumber = rowValidation.getPhoneNumber();
 
+//        is the phone number valid?
         Matcher matcherValidation = patternValidation.matcher(phoneNumber);
-        boolean isValid = false;
-        if (matcherValidation.find()) {
-            logger.info(String.format("Phone number is valid: %s", phoneNumber));
-            isValid = true;
+        if (!matcherValidation.find()) {
+            validateInvalid(rowValidation);
+        } else {
+            validatePrefix(rowValidation);
         }
+    }
+
+    /**
+     * Validates/Processes a invalid phone number
+     * @param rowValidation the row validation containing the phone number to validate
+     */
+    private void validateInvalid(RowValidation rowValidation) {
+        String phoneNumber = rowValidation.getPhoneNumber();
+        logger.info(String.format("Phone number is invalid: %s", phoneNumber));
+
+        rowValidation.addValidationResult(RowValidation.INVALID);
+        isInvalid = true;
+    }
+
+    /**
+     * Validates a phone number prefix by checking its trailing digit or international prefix
+     * @param rowValidation the row validation containing the phone number to validate
+     */
+    private void validatePrefix(RowValidation rowValidation) {
+        String phoneNumber = rowValidation.getPhoneNumber();
+        logger.info(String.format("Phone number is valid: %s", phoneNumber));
 
         Matcher matcherWithTrailingZero = patternWithTrailingZero.matcher(phoneNumber);
         Matcher matcherWithPrefix = patternWithPrefix.matcher(phoneNumber);
@@ -114,7 +151,7 @@ public class SouthAfricaValidationService implements ValidationService {
             logger.info(String.format("Phone number is correct: %s", phoneNumber));
             rowValidation.addValidationResult(RowValidation.CORRECT);
             rowValidation.setPhoneNumber(phoneNumber);
-            validLines++;
+            isValid = true;
         }
 
         Matcher matcherWithoutTrailingZeroOrPrefix = patternWithoutTrailingZeroOrPrefix.matcher(phoneNumber);
@@ -122,12 +159,7 @@ public class SouthAfricaValidationService implements ValidationService {
             logger.info(String.format("Phone number missing trailing 0: %s", phoneNumber));
             rowValidation.addValidationResult(RowValidation.ADD_TRAILING_ZERO);
             rowValidation.setPhoneNumber(String.format("%s%s", SOUTH_AFRICA_TRAILING_DIGIT, phoneNumber));
-            fixedlines++;
-        } else if (!isValid) {
-            logger.info(String.format("Invalid phone number: %s", phoneNumber));
-            rowValidation.addValidationResult(RowValidation.INVALID);
-            rowValidation.setPhoneNumber(String.format("%s%s", SOUTH_AFRICA_TRAILING_DIGIT, phoneNumber));
-            invalidLines++;
+            isFixed = true;
         }
     }
 
@@ -141,6 +173,7 @@ public class SouthAfricaValidationService implements ValidationService {
             Matcher matcherRightSideNumber = patternRightSideNumber.matcher(phoneNumber);
             if (matcherRightSideNumber.find()) {
                 phoneNumber = matcherRightSideNumber.group(2);
+                isFixed = true;
             }
         } else {
             phoneNumber = rowValidation.getPhoneNumber();
@@ -161,7 +194,7 @@ public class SouthAfricaValidationService implements ValidationService {
             logger.info(String.format("Phone number contained symbols: %s", phoneNumber));
             rowValidation.setPhoneNumber(phoneNumber);
             rowValidation.addValidationResult(RowValidation.REMOVE_SYMBOLS);
-            fixedlines++;
+            isFixed = true;
         }
     }
 }

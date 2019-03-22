@@ -16,7 +16,7 @@ public interface StorageService {
     String get(String filename) throws StorageException;
 
     /**
-     * Stores the result of a validation procedure
+     * Manages the  upload of a file, its contents validation and the storage of the overall data together with the validation results
      * @param validation the results of the validation procedure
      * @throws StorageException
      */

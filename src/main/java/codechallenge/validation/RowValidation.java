@@ -1,7 +1,5 @@
 package codechallenge.validation;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +16,11 @@ public class RowValidation {
 
     private String id;
     private String phoneNumber;
+//    list of validation steps/procedures/result performed over this phone number
     private List<String> validationResultList = new ArrayList<>();
+
+    public RowValidation() {
+    }
 
     public RowValidation(String phoneNumber) {
         this.id = new String();
