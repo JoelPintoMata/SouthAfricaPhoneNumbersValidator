@@ -1,10 +1,10 @@
-package com.example.codechallenge.controllers;
+package codechallenge.controllers;
 
 
-import com.example.codechallenge.storage.StorageService;
-import com.example.codechallenge.validation.RowValidation;
-import com.example.codechallenge.validation.Validation;
-import com.example.codechallenge.validation.ValidationService;
+import codechallenge.storage.StorageService;
+import codechallenge.validation.RowValidation;
+import codechallenge.validation.Validation;
+import codechallenge.validation.ValidationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;

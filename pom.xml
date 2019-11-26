@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>southAfricanPhoneNumbers</artifactId>
+	<artifactId>southAfricanPhoneNumbersValidation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>JavaSparkJSONReader</name>
-	<description>Java Spark JSON Reader</description>
+	<description>South African phone numbers validation</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -22,7 +22,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-        <jetty.version>9.4.7.v20170914</jetty.version> <!-- redefine for sparkjava 2.5 vs 9.3.11.v20160721 in spring-boot-dependencies -->
     </properties>
 
     <dependencies>

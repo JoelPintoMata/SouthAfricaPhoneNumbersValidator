@@ -1,10 +1,10 @@
-package com.example.codechallenge.controllers;
+package codechallenge.controllers;
 
 
-import com.example.codechallenge.storage.StorageException;
-import com.example.codechallenge.storage.StorageService;
-import com.example.codechallenge.validation.ValidationException;
-import com.example.codechallenge.validation.ValidationService;
+import codechallenge.storage.StorageException;
+import codechallenge.storage.StorageService;
+import codechallenge.validation.ValidationException;
+import codechallenge.validation.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -40,7 +40,7 @@ public class ValidationController {
             result = southAfricaValidatorService.validate(phoneNumber).asJson();
             return result;
         } catch (ValidationException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while performing file validation: ", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error while storing file validation results: %s", e.getMessage()));
         }
     }
 
@@ -57,7 +57,7 @@ public class ValidationController {
             result =  fileSystemStorageService.get(id);
             return result;
         } catch (StorageException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while storing file validation results: ", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Error while storing file validation results: %s", e.getMessage()));
         }
     }
 }

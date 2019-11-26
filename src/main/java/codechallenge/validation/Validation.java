@@ -1,4 +1,4 @@
-package com.example.codechallenge.validation;
+package codechallenge.validation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
